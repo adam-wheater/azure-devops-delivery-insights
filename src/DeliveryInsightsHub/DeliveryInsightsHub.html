@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Delivery Insights</title>
+    <!--
+      The design system is extracted to a sibling stylesheet by
+      mini-css-extract-plugin. This page is copied verbatim rather than generated
+      by html-webpack-plugin, so the link has to be written by hand — without it
+      the app renders with class names and no styles at all.
+      Keep the href in sync with output.filename in webpack.config.js.
+    -->
+    <link rel="stylesheet" href="DeliveryInsightsHub.css" />
+    <style>
+      html {
+        color-scheme: light dark;
+      }
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+      }
+      /*
+        #root deliberately does NOT set padding here. It is an ID selector, so
+        `padding: 0` would outrank the `.ax-root` class rule in app.css and the
+        page would have no padding at all — which is exactly what happened, and
+        why the header sat flush against the hub chrome.
+      */
+      html,
+      body,
+      #root {
+        width: 100%;
+        min-height: 100%;
+        overflow: auto;
+      }
+      /* Only a base background, so there is no flash before the bundle paints.
+         Every other colour comes from the design tokens in app.css. */
+      body {
+        background: #f6f7fb;
+      }
+      :root[data-theme="dark"] body {
+        background: #14181f;
+      }
+      @media (prefers-color-scheme: dark) {
+        :root:not([data-theme="light"]) body {
+          background: #14181f;
+        }
+      }
+    </style>
+    <script>
+      // Stamp the persisted theme before the bundle parses. The authoritative
+      // preference comes from per-user extension data, but that round trip is far
+      // too slow to prevent a light flash inside a dark host.
+      (function () {
+        try {
+          var stored = window.localStorage.getItem("delivery-insights.theme");
+          if (stored === "light" || stored === "dark") {
+            document.documentElement.setAttribute("data-theme", stored);
+          }
+        } catch (e) {
+          /* storage can be blocked in the extension iframe */
+        }
+      })();
+    </script>
+  </head>
+  <body>
+    <div id="root" class="ax-root"></div>
+    <script src="DeliveryInsightsHub.js"></script>
+  </body>
+</html>

@@ -1,0 +1,2101 @@
+/* ============================================================================
+   Shared design system for the Azure DevOps extension family
+   Single stylesheet, design tokens first. Light + dark, driven by the Azure
+   DevOps body class (`dark-theme` / `light-theme`) with an OS-preference
+   fallback so the hub matches its host chrome on first paint.
+   ========================================================================= */
+
+/* ---------------------------------------------------------------- tokens - */
+
+:root {
+  /* accent ramp */
+  --ax-accent: #0b6bcb;
+  --ax-accent-strong: #0a58a8;
+  --ax-accent-soft: rgba(11, 107, 203, 0.09);
+  --ax-accent-ring: rgba(11, 107, 203, 0.35);
+  --ax-accent-contrast: #ffffff;
+
+  /* Filled primary controls (primary button, brand mark). Separate from the
+     accent because dark mode needs a LIGHT accent for text/links but a DEEP
+     blue behind white text — white on the light accent would fail. */
+  --ax-primary: #0b6bcb;
+  --ax-primary-strong: #0a58a8;
+  --ax-primary-fg: #ffffff;
+
+  /* surfaces */
+  --ax-bg: #f6f7fb;
+  --ax-surface: #ffffff;
+  --ax-surface-2: #f2f4f8;
+  --ax-surface-3: #e9edf3;
+  --ax-surface-glass: linear-gradient(180deg, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.62));
+  --ax-overlay: rgba(16, 22, 33, 0.42);
+
+  /* text */
+  /* All four clear 4.5:1 against --ax-bg (#f6f7fb) and --ax-surface (#ffffff).
+     The previous muted greys (#888 = 3.40:1, #999 = 2.73:1) did not. */
+  --ax-text: #101623;
+  --ax-text-2: #414c5e;
+  --ax-text-3: #5a6577;
+  --ax-text-4: #5f6979;
+
+  /* lines */
+  /* Borders of interactive controls (inputs, buttons, checkboxes) must clear
+     3:1 against the surface they sit on (WCAG 1.4.11). Decorative hairlines
+     (cards, table rows) use --ax-border and are exempt. */
+  --ax-control-border: #858e9d;
+  --ax-border: #dfe4ec;
+  --ax-border-strong: #c7cfdb;
+  --ax-border-subtle: #eaeef4;
+
+  /* semantic */
+  --ax-success: #156f36;
+  --ax-success-bg: rgba(21, 111, 54, 0.09);
+  --ax-danger: #c0293b;
+  --ax-danger-bg: rgba(192, 41, 59, 0.1);
+  --ax-warn: #8f4f00;
+  --ax-warn-bg: rgba(143, 79, 0, 0.1);
+  --ax-info: #0b6bcb;
+  --ax-info-bg: rgba(11, 107, 203, 0.1);
+  --ax-neutral-bg: rgba(107, 118, 136, 0.12);
+
+  /* DORA bands */
+  --ax-band-elite: #0d6b4f;
+  --ax-band-elite-bg: rgba(13, 107, 79, 0.1);
+  --ax-band-high: #0b6bcb;
+  --ax-band-high-bg: rgba(11, 107, 203, 0.09);
+  --ax-band-medium: #8f4f00;
+  --ax-band-medium-bg: rgba(143, 79, 0, 0.1);
+  --ax-band-low: #c0293b;
+  --ax-band-low-bg: rgba(192, 41, 59, 0.12);
+
+  /* production provenance */
+  --ax-prod-verified: #0d6b4f;
+  --ax-prod-unverified: #8f4f00;
+  --ax-prod-failed: #c0293b;
+
+  /* environment lanes (overridden per-pattern inline where configured) */
+  --ax-lane-grid: rgba(16, 22, 33, 0.08);
+
+  /* categorical chart series — each clears 3:1 on --ax-surface */
+  --ax-chart-1: #0b6bcb;
+  --ax-chart-2: #156f36;
+  --ax-chart-3: #8f4f00;
+  --ax-chart-4: #c0293b;
+  --ax-chart-5: #6b4fbb;
+  --ax-chart-6: #0f7a8a;
+
+  /* elevation */
+  --ax-shadow-1: 0 1px 2px rgba(16, 22, 33, 0.06);
+  --ax-shadow-2: 0 1px 2px rgba(16, 22, 33, 0.05), 0 8px 24px -14px rgba(16, 22, 33, 0.28);
+  --ax-shadow-3: 0 2px 4px rgba(16, 22, 33, 0.06), 0 20px 48px -20px rgba(16, 22, 33, 0.34);
+
+  /* shape */
+  --ax-r-sm: 6px;
+  --ax-r-md: 10px;
+  --ax-r-lg: 14px;
+  --ax-r-xl: 20px;
+  --ax-r-pill: 999px;
+
+  /* space */
+  --ax-s1: 4px;
+  --ax-s2: 8px;
+  --ax-s3: 12px;
+  --ax-s4: 16px;
+  --ax-s5: 20px;
+  --ax-s6: 24px;
+  --ax-s7: 32px;
+  --ax-s8: 40px;
+
+  /* Breathing room above the brand mark so the header clears the Azure DevOps
+     hub chrome instead of butting up against it. Tuned here rather than on the
+     header itself, so the gate screens get the same air. */
+  --ax-page-top: 40px;
+
+  /* type */
+  --ax-font:
+    "Segoe UI Variable Text", "Segoe UI", -apple-system, BlinkMacSystemFont, Roboto,
+    "Helvetica Neue", Arial, sans-serif;
+  --ax-font-num:
+    "Segoe UI Variable Display", "Segoe UI", -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
+  --ax-mono: ui-monospace, SFMono-Regular, "Cascadia Mono", Consolas, "Liberation Mono", monospace;
+
+  /* motion */
+  --ax-ease: cubic-bezier(0.22, 0.61, 0.36, 1);
+  --ax-ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ax-fast: 120ms;
+  --ax-base: 220ms;
+  --ax-slow: 420ms;
+
+  --ax-skeleton-a: rgba(16, 22, 33, 0.06);
+  --ax-skeleton-b: rgba(16, 22, 33, 0.12);
+}
+
+/* Dark palette. Declared twice on purpose:
+     - under prefers-color-scheme, guarded so an explicit light choice still wins
+     - under [data-theme="dark"], so the in-app toggle wins in both directions
+   Every token above is redefined in both branches — a colour must never exist in
+   only one of them. The shared body lives in a custom-property block that both
+   selectors below apply. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --ax-accent: #4c9bf0;
+    --ax-accent-strong: #6fb1f5;
+    --ax-accent-soft: rgba(76, 155, 240, 0.11);
+    --ax-accent-ring: rgba(76, 155, 240, 0.45);
+    --ax-accent-contrast: #06121f;
+    --ax-primary: #0b6bcb;
+    --ax-primary-strong: #1372d6;
+    --ax-primary-fg: #ffffff;
+
+    --ax-bg: #14181f;
+    --ax-surface: #1b202a;
+    --ax-surface-2: #212734;
+    --ax-surface-3: #29303f;
+    --ax-surface-glass: linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.055),
+      rgba(255, 255, 255, 0.02)
+    );
+    --ax-overlay: rgba(6, 9, 14, 0.62);
+
+    --ax-text: #eef1f6;
+    --ax-text-2: #b9c2d0;
+    --ax-text-3: #a3adbc;
+    --ax-text-4: #98a2b3;
+
+    --ax-border: #2e3644;
+    --ax-border-strong: #3d4657;
+    --ax-border-subtle: #262d3a;
+    --ax-control-border: #6f7a8b;
+    --ax-chart-1: #4c9bf0;
+    --ax-chart-2: #56d38a;
+    --ax-chart-3: #f0b45e;
+    --ax-chart-4: #ff8b8b;
+    --ax-chart-5: #b39df5;
+    --ax-chart-6: #5fc8d8;
+
+    --ax-success: #56d38a;
+    --ax-success-bg: rgba(86, 211, 138, 0.14);
+    --ax-danger: #ff8b8b;
+    --ax-danger-bg: rgba(255, 139, 139, 0.14);
+    --ax-warn: #f0b45e;
+    --ax-warn-bg: rgba(240, 180, 94, 0.15);
+    --ax-info: #6fb1f5;
+    --ax-info-bg: rgba(111, 177, 245, 0.14);
+    --ax-neutral-bg: rgba(147, 157, 173, 0.14);
+
+    --ax-band-elite: #4fd2a0;
+    --ax-band-elite-bg: rgba(79, 210, 160, 0.15);
+    --ax-band-high: #6fb1f5;
+    --ax-band-high-bg: rgba(111, 177, 245, 0.15);
+    --ax-band-medium: #f0b45e;
+    --ax-band-medium-bg: rgba(240, 180, 94, 0.16);
+    --ax-band-low: #ff8b8b;
+    --ax-band-low-bg: rgba(255, 139, 139, 0.15);
+
+    --ax-prod-verified: #4fd2a0;
+    --ax-prod-unverified: #f0b45e;
+    --ax-prod-failed: #ff8b8b;
+
+    --ax-lane-grid: rgba(255, 255, 255, 0.08);
+
+    --ax-shadow-1: 0 1px 2px rgba(0, 0, 0, 0.4);
+    --ax-shadow-2: 0 1px 2px rgba(0, 0, 0, 0.35), 0 10px 28px -16px rgba(0, 0, 0, 0.8);
+    --ax-shadow-3: 0 2px 6px rgba(0, 0, 0, 0.4), 0 24px 56px -24px rgba(0, 0, 0, 0.9);
+
+    --ax-skeleton-a: rgba(255, 255, 255, 0.05);
+    --ax-skeleton-b: rgba(255, 255, 255, 0.11);
+  }
+}
+
+:root[data-theme="dark"] {
+  --ax-accent: #4c9bf0;
+  --ax-accent-strong: #6fb1f5;
+  --ax-accent-soft: rgba(76, 155, 240, 0.11);
+  --ax-accent-ring: rgba(76, 155, 240, 0.45);
+  --ax-accent-contrast: #06121f;
+  --ax-primary: #0b6bcb;
+  --ax-primary-strong: #1372d6;
+  --ax-primary-fg: #ffffff;
+
+  --ax-bg: #14181f;
+  --ax-surface: #1b202a;
+  --ax-surface-2: #212734;
+  --ax-surface-3: #29303f;
+  --ax-surface-glass: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.055),
+    rgba(255, 255, 255, 0.02)
+  );
+  --ax-overlay: rgba(6, 9, 14, 0.62);
+
+  --ax-text: #eef1f6;
+  --ax-text-2: #b9c2d0;
+  --ax-text-3: #a3adbc;
+  --ax-text-4: #98a2b3;
+
+  --ax-border: #2e3644;
+  --ax-border-strong: #3d4657;
+  --ax-border-subtle: #262d3a;
+  --ax-control-border: #6f7a8b;
+  --ax-chart-1: #4c9bf0;
+  --ax-chart-2: #56d38a;
+  --ax-chart-3: #f0b45e;
+  --ax-chart-4: #ff8b8b;
+  --ax-chart-5: #b39df5;
+  --ax-chart-6: #5fc8d8;
+
+  --ax-success: #56d38a;
+  --ax-success-bg: rgba(86, 211, 138, 0.14);
+  --ax-danger: #ff8b8b;
+  --ax-danger-bg: rgba(255, 139, 139, 0.14);
+  --ax-warn: #f0b45e;
+  --ax-warn-bg: rgba(240, 180, 94, 0.15);
+  --ax-info: #6fb1f5;
+  --ax-info-bg: rgba(111, 177, 245, 0.14);
+  --ax-neutral-bg: rgba(147, 157, 173, 0.14);
+
+  --ax-band-elite: #4fd2a0;
+  --ax-band-elite-bg: rgba(79, 210, 160, 0.15);
+  --ax-band-high: #6fb1f5;
+  --ax-band-high-bg: rgba(111, 177, 245, 0.15);
+  --ax-band-medium: #f0b45e;
+  --ax-band-medium-bg: rgba(240, 180, 94, 0.16);
+  --ax-band-low: #ff8b8b;
+  --ax-band-low-bg: rgba(255, 139, 139, 0.15);
+
+  --ax-prod-verified: #4fd2a0;
+  --ax-prod-unverified: #f0b45e;
+  --ax-prod-failed: #ff8b8b;
+
+  --ax-lane-grid: rgba(255, 255, 255, 0.08);
+
+  --ax-shadow-1: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --ax-shadow-2: 0 1px 2px rgba(0, 0, 0, 0.35), 0 10px 28px -16px rgba(0, 0, 0, 0.8);
+  --ax-shadow-3: 0 2px 6px rgba(0, 0, 0, 0.4), 0 24px 56px -24px rgba(0, 0, 0, 0.9);
+
+  --ax-skeleton-a: rgba(255, 255, 255, 0.05);
+  --ax-skeleton-b: rgba(255, 255, 255, 0.11);
+}
+
+/* ------------------------------------------------------------- app shell - */
+
+.ax-root {
+  font-family: var(--ax-font);
+  color: var(--ax-text);
+  background: var(--ax-bg);
+  min-height: 100%;
+  padding: var(--ax-page-top) var(--ax-s6) var(--ax-s8);
+  box-sizing: border-box;
+  font-size: 14px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+.ax-root *,
+.ax-root *::before,
+.ax-root *::after {
+  box-sizing: border-box;
+}
+
+.ax-shell {
+  max-width: 1440px;
+  margin: 0 auto;
+}
+
+/* --------------------------------------------------------------- header -- */
+
+.ax-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--ax-s5);
+  flex-wrap: wrap;
+  padding-bottom: var(--ax-s4);
+  margin-bottom: var(--ax-s5);
+  border-bottom: 1px solid var(--ax-border);
+}
+
+.ax-brand {
+  display: flex;
+  align-items: center;
+  gap: var(--ax-s3);
+  min-width: 0;
+}
+
+.ax-brand-mark {
+  width: 38px;
+  height: 38px;
+  border-radius: var(--ax-r-md);
+  display: grid;
+  place-items: center;
+  color: var(--ax-primary-fg);
+  background: linear-gradient(140deg, var(--ax-primary), var(--ax-primary-strong));
+  box-shadow: 0 6px 16px -8px var(--ax-accent-ring);
+  flex: none;
+}
+
+.ax-title {
+  margin: 0;
+  font-family: var(--ax-font-num);
+  font-size: 21px;
+  font-weight: 650;
+  letter-spacing: -0.015em;
+  line-height: 1.15;
+}
+
+.ax-subtitle {
+  margin: 2px 0 0;
+  font-size: 12.5px;
+  color: var(--ax-text-3);
+}
+
+.ax-header-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--ax-s2);
+  flex-wrap: wrap;
+}
+
+/* -------------------------------------------------------------- controls - */
+
+.ax-btn {
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--ax-s2);
+  padding: 7px 14px;
+  border-radius: var(--ax-r-md);
+  border: 1px solid var(--ax-control-border);
+  background: var(--ax-surface);
+  color: var(--ax-text);
+  cursor: pointer;
+  white-space: nowrap;
+  transition:
+    background var(--ax-fast) var(--ax-ease),
+    border-color var(--ax-fast) var(--ax-ease),
+    transform var(--ax-fast) var(--ax-ease),
+    box-shadow var(--ax-fast) var(--ax-ease);
+}
+
+.ax-btn:hover:not(:disabled) {
+  background: var(--ax-surface-2);
+  border-color: var(--ax-text-3);
+}
+
+.ax-btn:active:not(:disabled) {
+  transform: translateY(1px);
+}
+
+.ax-btn:disabled {
+  opacity: 0.55;
+  cursor: default;
+}
+
+.ax-btn--primary {
+  background: linear-gradient(140deg, var(--ax-primary), var(--ax-primary-strong));
+  border-color: transparent;
+  color: var(--ax-primary-fg);
+  box-shadow: 0 6px 18px -10px var(--ax-accent-ring);
+}
+
+.ax-btn--primary:hover:not(:disabled) {
+  background: linear-gradient(140deg, var(--ax-primary-strong), var(--ax-primary-strong));
+  border-color: transparent;
+  box-shadow: 0 10px 24px -12px var(--ax-accent-ring);
+}
+
+.ax-btn--danger {
+  color: var(--ax-danger);
+  border-color: var(--ax-control-border);
+}
+
+.ax-btn--danger:hover:not(:disabled) {
+  background: var(--ax-danger-bg);
+  border-color: var(--ax-danger);
+}
+
+.ax-btn--ghost {
+  background: transparent;
+  border-color: transparent;
+  color: var(--ax-text-2);
+}
+
+.ax-btn--ghost:hover:not(:disabled) {
+  background: var(--ax-surface-2);
+  border-color: var(--ax-control-border);
+}
+
+.ax-btn--sm {
+  padding: 4px 10px;
+  font-size: 12px;
+  border-radius: var(--ax-r-sm);
+}
+
+.ax-btn--icon {
+  padding: 6px;
+  width: 30px;
+  height: 30px;
+  justify-content: center;
+}
+
+/* focus is never removed — only restyled */
+.ax-root :focus-visible {
+  outline: 2px solid var(--ax-accent);
+  outline-offset: 2px;
+  border-radius: var(--ax-r-sm);
+}
+
+.ax-input,
+.ax-select {
+  font: inherit;
+  font-size: 13px;
+  padding: 6px 10px;
+  color: var(--ax-text);
+  background: var(--ax-surface);
+  border: 1px solid var(--ax-control-border);
+  border-radius: var(--ax-r-sm);
+  transition:
+    border-color var(--ax-fast) var(--ax-ease),
+    box-shadow var(--ax-fast) var(--ax-ease);
+  min-width: 0;
+}
+
+.ax-input:focus,
+.ax-select:focus {
+  border-color: var(--ax-accent);
+  box-shadow: 0 0 0 3px var(--ax-accent-soft);
+  outline: none;
+}
+
+.ax-input--invalid {
+  border-color: var(--ax-danger);
+}
+
+.ax-input--invalid:focus {
+  box-shadow: 0 0 0 3px var(--ax-danger-bg);
+}
+
+.ax-input::placeholder {
+  color: var(--ax-text-4);
+}
+
+/* segmented control — used for the time-range switcher */
+.ax-segmented {
+  display: inline-flex;
+  padding: 3px;
+  gap: 2px;
+  background: var(--ax-surface-2);
+  border: 1px solid var(--ax-control-border);
+  border-radius: var(--ax-r-md);
+}
+
+.ax-segmented button {
+  font: inherit;
+  font-size: 12.5px;
+  font-weight: 600;
+  padding: 4px 12px;
+  border: none;
+  background: transparent;
+  color: var(--ax-text-3);
+  border-radius: 7px;
+  cursor: pointer;
+  transition:
+    background var(--ax-fast) var(--ax-ease),
+    color var(--ax-fast) var(--ax-ease);
+}
+
+.ax-segmented button:hover {
+  color: var(--ax-text);
+}
+
+.ax-segmented button[aria-pressed="true"] {
+  background: var(--ax-surface);
+  color: var(--ax-text);
+  box-shadow: var(--ax-shadow-1);
+}
+
+/* ----------------------------------------------------------------- card -- */
+
+.ax-card {
+  background: var(--ax-surface);
+  background-image: var(--ax-surface-glass);
+  border: 1px solid var(--ax-border);
+  border-radius: var(--ax-r-lg);
+  box-shadow: var(--ax-shadow-2);
+}
+
+.ax-card__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--ax-s3);
+  padding: var(--ax-s4) var(--ax-s5);
+  border-bottom: 1px solid var(--ax-border-subtle);
+  flex-wrap: wrap;
+}
+
+.ax-card__title {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 650;
+  letter-spacing: -0.005em;
+  display: flex;
+  align-items: center;
+  gap: var(--ax-s2);
+}
+
+.ax-card__hint {
+  margin: 2px 0 0;
+  font-size: 12px;
+  color: var(--ax-text-3);
+  font-weight: 400;
+  letter-spacing: 0;
+}
+
+.ax-card__body {
+  padding: var(--ax-s5);
+}
+
+.ax-card__body--flush {
+  padding: 0;
+}
+
+.ax-section {
+  margin-bottom: var(--ax-s5);
+}
+
+/* ---------------------------------------------------------- metric cards - */
+
+.ax-metrics {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(216px, 1fr));
+  gap: var(--ax-s3);
+  margin-bottom: var(--ax-s5);
+}
+
+.ax-metric {
+  position: relative;
+  overflow: hidden;
+  padding: var(--ax-s4) var(--ax-s5) var(--ax-s5);
+  background: var(--ax-surface);
+  background-image: var(--ax-surface-glass);
+  border: 1px solid var(--ax-border);
+  border-radius: var(--ax-r-lg);
+  box-shadow: var(--ax-shadow-2);
+  transition:
+    transform var(--ax-base) var(--ax-ease-out),
+    box-shadow var(--ax-base) var(--ax-ease-out),
+    border-color var(--ax-base) var(--ax-ease-out);
+}
+
+.ax-metric:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--ax-shadow-3);
+  border-color: var(--ax-border-strong);
+}
+
+.ax-metric::after {
+  /* band accent hairline along the top edge */
+  content: "";
+  position: absolute;
+  inset: 0 0 auto;
+  height: 2px;
+  background: var(--ax-metric-accent, var(--ax-accent));
+  opacity: 0.85;
+}
+
+.ax-metric__label {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: var(--ax-text-3);
+  display: flex;
+  align-items: center;
+  gap: var(--ax-s2);
+}
+
+.ax-metric__value {
+  font-family: var(--ax-font-num);
+  font-size: 34px;
+  font-weight: 650;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+  margin-top: var(--ax-s3);
+  font-variant-numeric: tabular-nums;
+  display: flex;
+  align-items: baseline;
+  gap: var(--ax-s2);
+}
+
+.ax-metric__unit {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--ax-text-3);
+  letter-spacing: 0;
+}
+
+.ax-metric__foot {
+  margin-top: var(--ax-s3);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--ax-s2);
+}
+
+.ax-metric__spark {
+  display: block;
+  width: 100%;
+  height: 28px;
+  margin-top: var(--ax-s3);
+  overflow: visible;
+}
+
+/* --------------------------------------------------------------- badges -- */
+
+.ax-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 2px 9px;
+  border-radius: var(--ax-r-pill);
+  font-size: 11.5px;
+  font-weight: 650;
+  letter-spacing: 0.01em;
+  white-space: nowrap;
+  background: var(--ax-neutral-bg);
+  color: var(--ax-text-2);
+}
+
+.ax-pill--elite {
+  background: var(--ax-band-elite-bg);
+  color: var(--ax-band-elite);
+}
+.ax-pill--high {
+  background: var(--ax-band-high-bg);
+  color: var(--ax-band-high);
+}
+.ax-pill--medium {
+  background: var(--ax-band-medium-bg);
+  color: var(--ax-band-medium);
+}
+.ax-pill--low {
+  background: var(--ax-band-low-bg);
+  color: var(--ax-band-low);
+}
+.ax-pill--success {
+  background: var(--ax-success-bg);
+  color: var(--ax-success);
+}
+.ax-pill--danger {
+  background: var(--ax-danger-bg);
+  color: var(--ax-danger);
+}
+.ax-pill--warn {
+  background: var(--ax-warn-bg);
+  color: var(--ax-warn);
+}
+.ax-pill--info {
+  background: var(--ax-info-bg);
+  color: var(--ax-info);
+}
+
+.ax-delta {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 12px;
+  font-weight: 650;
+  font-variant-numeric: tabular-nums;
+}
+
+.ax-delta--up {
+  color: var(--ax-success);
+}
+.ax-delta--down {
+  color: var(--ax-danger);
+}
+.ax-delta--flat {
+  color: var(--ax-text-4);
+}
+
+/* Production provenance. Verified = solid tint; inferred = dashed outline, so the
+   distinction survives greyscale and colour-blindness. */
+.ax-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 1px 8px;
+  border-radius: var(--ax-r-pill);
+  font-size: 11px;
+  font-weight: 650;
+  white-space: nowrap;
+  border: 1px solid transparent;
+}
+
+.ax-chip--verified {
+  background: var(--ax-success-bg);
+  color: var(--ax-prod-verified);
+}
+
+.ax-chip--unverified {
+  background: transparent;
+  color: var(--ax-prod-unverified);
+  border: 1px dashed currentColor;
+}
+
+.ax-chip--failed {
+  background: var(--ax-danger-bg);
+  color: var(--ax-prod-failed);
+}
+
+/* status dot — always paired with a text label, never colour alone */
+.ax-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  display: inline-block;
+  flex: none;
+  background: currentColor;
+}
+
+/* --------------------------------------------------------------- tables -- */
+
+.ax-table-wrap {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.ax-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: 13px;
+}
+
+.ax-table th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  text-align: left;
+  font-size: 11.5px;
+  font-weight: 650;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: var(--ax-text-3);
+  background: var(--ax-surface-2);
+  padding: 9px var(--ax-s4);
+  border-bottom: 1px solid var(--ax-border);
+  white-space: nowrap;
+}
+
+.ax-table th.ax-num,
+.ax-table td.ax-num {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.ax-table th.ax-center,
+.ax-table td.ax-center {
+  text-align: center;
+}
+
+.ax-table td {
+  padding: 9px var(--ax-s4);
+  border-bottom: 1px solid var(--ax-border-subtle);
+  color: var(--ax-text);
+  vertical-align: middle;
+}
+
+.ax-table tbody tr {
+  transition: background var(--ax-fast) var(--ax-ease);
+}
+
+.ax-table tbody tr:hover {
+  background: var(--ax-surface-2);
+}
+
+.ax-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.ax-th-sort {
+  cursor: pointer;
+  user-select: none;
+}
+
+.ax-th-sort:hover {
+  color: var(--ax-text);
+}
+
+.ax-mono {
+  font-family: var(--ax-mono);
+  font-size: 12px;
+}
+
+.ax-link {
+  color: var(--ax-accent);
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.ax-link:hover {
+  text-decoration: underline;
+}
+
+.ax-truncate {
+  max-width: 280px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ------------------------------------------------------------- feedback -- */
+
+.ax-banner {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--ax-s3);
+  padding: var(--ax-s3) var(--ax-s4);
+  border-radius: var(--ax-r-md);
+  border: 1px solid transparent;
+  font-size: 13px;
+  margin-bottom: var(--ax-s4);
+  animation: ax-slide-in var(--ax-base) var(--ax-ease-out) both;
+}
+
+.ax-banner--error {
+  background: var(--ax-danger-bg);
+  border-color: var(--ax-danger);
+  color: var(--ax-danger);
+}
+
+.ax-banner--warn {
+  background: var(--ax-warn-bg);
+  border-color: var(--ax-warn);
+  color: var(--ax-warn);
+}
+
+.ax-banner--info {
+  background: var(--ax-info-bg);
+  border-color: var(--ax-info);
+  color: var(--ax-info);
+}
+
+.ax-banner__body {
+  flex: 1;
+  min-width: 0;
+  color: var(--ax-text);
+}
+
+.ax-banner__title {
+  font-weight: 650;
+  margin-bottom: 2px;
+}
+
+.ax-empty {
+  padding: var(--ax-s8) var(--ax-s5);
+  text-align: center;
+  color: var(--ax-text-3);
+}
+
+.ax-empty__title {
+  font-family: var(--ax-font-num);
+  font-size: 17px;
+  font-weight: 650;
+  color: var(--ax-text);
+  margin: 0 0 var(--ax-s2);
+}
+
+.ax-empty__body {
+  margin: 0 auto;
+  max-width: 520px;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+/* progress */
+.ax-progress {
+  margin-bottom: var(--ax-s4);
+}
+
+.ax-progress__row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--ax-s3);
+  font-size: 12.5px;
+  color: var(--ax-text-2);
+  margin-bottom: 6px;
+}
+
+.ax-progress__track {
+  height: 5px;
+  border-radius: var(--ax-r-pill);
+  background: var(--ax-surface-3);
+  overflow: hidden;
+}
+
+.ax-progress__fill {
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, var(--ax-accent), var(--ax-accent-strong));
+  transition: width var(--ax-base) var(--ax-ease-out);
+}
+
+.ax-progress__fill--indeterminate {
+  width: 35% !important;
+  animation: ax-indeterminate 1.15s var(--ax-ease) infinite;
+}
+
+/* skeletons */
+.ax-skel {
+  border-radius: var(--ax-r-sm);
+  background: linear-gradient(
+    90deg,
+    var(--ax-skeleton-a) 25%,
+    var(--ax-skeleton-b) 37%,
+    var(--ax-skeleton-a) 63%
+  );
+  background-size: 400% 100%;
+  animation: ax-shimmer 1.4s ease-in-out infinite;
+}
+
+.ax-skel--text {
+  height: 12px;
+  margin-bottom: 8px;
+}
+.ax-skel--value {
+  height: 32px;
+  width: 58%;
+  margin: 12px 0;
+}
+.ax-skel--pill {
+  height: 18px;
+  width: 74px;
+  border-radius: var(--ax-r-pill);
+}
+
+.ax-spinner {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  border: 2px solid currentColor;
+  border-top-color: transparent;
+  animation: ax-spin 0.7s linear infinite;
+  flex: none;
+}
+
+/* --------------------------------------------------------------- charts -- */
+
+.ax-chart {
+  display: block;
+  width: 100%;
+  overflow: visible;
+}
+
+.ax-chart text {
+  font-family: var(--ax-font);
+  fill: var(--ax-text-3);
+}
+
+.ax-chart .ax-grid {
+  stroke: var(--ax-lane-grid);
+  stroke-width: 1;
+}
+
+.ax-chart .ax-axis {
+  stroke: var(--ax-border);
+  stroke-width: 1;
+}
+
+.ax-chart .ax-point {
+  transition:
+    r var(--ax-fast) var(--ax-ease),
+    opacity var(--ax-fast) var(--ax-ease);
+  cursor: pointer;
+}
+
+.ax-chart .ax-point:hover {
+  opacity: 1;
+}
+
+.ax-chart .ax-marker {
+  cursor: pointer;
+  transition: transform var(--ax-fast) var(--ax-ease);
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.ax-chart .ax-marker:hover {
+  transform: scale(1.35);
+}
+
+.ax-chart .ax-marker:focus-visible {
+  outline: none;
+}
+
+.ax-chart .ax-marker:focus-visible .ax-marker__ring {
+  opacity: 1;
+}
+
+.ax-marker__ring {
+  opacity: 0;
+  fill: none;
+  stroke: var(--ax-accent);
+  stroke-width: 2;
+}
+
+.ax-timeline-lane:nth-child(even) .ax-timeline-lane__bg {
+  fill: var(--ax-lane-grid);
+  opacity: 0.35;
+}
+
+/* ---------------------------------------------------------- diagnostics -- */
+
+.ax-diagnostics {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--ax-s2) var(--ax-s5);
+  padding: var(--ax-s3) var(--ax-s5);
+  border: 1px solid var(--ax-border);
+  border-radius: var(--ax-r-md);
+  background: var(--ax-surface-2);
+  font-size: 12px;
+  color: var(--ax-text-2);
+  margin-bottom: var(--ax-s5);
+}
+
+.ax-diagnostics__item {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+}
+
+.ax-diagnostics__label {
+  color: var(--ax-text-3);
+}
+
+.ax-diagnostics__value {
+  font-weight: 650;
+  font-variant-numeric: tabular-nums;
+  color: var(--ax-text);
+}
+
+/* ---------------------------------------------------------------- modal -- */
+
+.ax-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: var(--ax-overlay);
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: var(--ax-s7) var(--ax-s4);
+  overflow-y: auto;
+  z-index: 100;
+  animation: ax-fade-in var(--ax-fast) var(--ax-ease) both;
+  backdrop-filter: blur(2px);
+}
+
+.ax-modal {
+  width: 100%;
+  max-width: 720px;
+  background: var(--ax-surface);
+  border: 1px solid var(--ax-border);
+  border-radius: var(--ax-r-xl);
+  box-shadow: var(--ax-shadow-3);
+  animation: ax-pop-in var(--ax-base) var(--ax-ease-out) both;
+}
+
+.ax-modal__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--ax-s3);
+  padding: var(--ax-s5) var(--ax-s6);
+  border-bottom: 1px solid var(--ax-border-subtle);
+}
+
+.ax-modal__title {
+  margin: 0;
+  font-family: var(--ax-font-num);
+  font-size: 17px;
+  font-weight: 650;
+  letter-spacing: -0.01em;
+}
+
+.ax-modal__body {
+  padding: var(--ax-s6);
+}
+
+.ax-modal__foot {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--ax-s2);
+  padding: var(--ax-s4) var(--ax-s6);
+  border-top: 1px solid var(--ax-border-subtle);
+}
+
+/* ----------------------------------------------------------------- gate -- */
+
+.ax-gate {
+  min-height: 70vh;
+  display: grid;
+  place-items: center;
+  padding: var(--ax-s7) var(--ax-s4);
+}
+
+.ax-gate__card {
+  width: 100%;
+  max-width: 520px;
+  text-align: center;
+  padding: var(--ax-s8) var(--ax-s7);
+  background: var(--ax-surface);
+  background-image: var(--ax-surface-glass);
+  border: 1px solid var(--ax-border);
+  border-radius: var(--ax-r-xl);
+  box-shadow: var(--ax-shadow-3);
+  animation: ax-pop-in var(--ax-slow) var(--ax-ease-out) both;
+}
+
+.ax-gate__mark {
+  width: 56px;
+  height: 56px;
+  border-radius: var(--ax-r-lg);
+  display: grid;
+  place-items: center;
+  margin: 0 auto var(--ax-s5);
+  background: var(--ax-accent-soft);
+  color: var(--ax-accent);
+}
+
+.ax-gate__title {
+  font-family: var(--ax-font-num);
+  font-size: 21px;
+  font-weight: 650;
+  letter-spacing: -0.015em;
+  margin: 0 0 var(--ax-s2);
+}
+
+.ax-gate__body {
+  font-size: 13.5px;
+  color: var(--ax-text-2);
+  line-height: 1.65;
+  margin: 0 0 var(--ax-s5);
+}
+
+.ax-gate__identity {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--ax-s2);
+  padding: 5px 12px;
+  border-radius: var(--ax-r-pill);
+  background: var(--ax-surface-2);
+  border: 1px solid var(--ax-border);
+  font-size: 12.5px;
+  color: var(--ax-text-2);
+  margin-bottom: var(--ax-s5);
+}
+
+/* -------------------------------------------------------------- members -- */
+
+.ax-member-row {
+  display: flex;
+  align-items: center;
+  gap: var(--ax-s3);
+  padding: 9px var(--ax-s3);
+  border-radius: var(--ax-r-md);
+  transition: background var(--ax-fast) var(--ax-ease);
+}
+
+.ax-member-row:hover {
+  background: var(--ax-surface-2);
+}
+
+.ax-avatar {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-size: 12px;
+  font-weight: 650;
+  color: var(--ax-accent);
+  background: var(--ax-accent-soft);
+  flex: none;
+  text-transform: uppercase;
+}
+
+/* ---------------------------------------------------------------- misc --- */
+
+.ax-row {
+  display: flex;
+  align-items: center;
+  gap: var(--ax-s2);
+  flex-wrap: wrap;
+}
+
+.ax-spacer {
+  flex: 1;
+}
+
+.ax-muted {
+  color: var(--ax-text-3);
+}
+
+.ax-fine {
+  font-size: 11.5px;
+  color: var(--ax-text-4);
+  line-height: 1.5;
+}
+
+.ax-grid-2 {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: var(--ax-s4);
+}
+
+.ax-sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* staggered entrance for dashboard sections */
+.ax-enter {
+  animation: ax-rise var(--ax-slow) var(--ax-ease-out) both;
+}
+
+.ax-enter-1 {
+  animation-delay: 40ms;
+}
+.ax-enter-2 {
+  animation-delay: 90ms;
+}
+.ax-enter-3 {
+  animation-delay: 140ms;
+}
+.ax-enter-4 {
+  animation-delay: 190ms;
+}
+.ax-enter-5 {
+  animation-delay: 240ms;
+}
+
+/* ------------------------------------------------------------ keyframes -- */
+
+@keyframes ax-shimmer {
+  0% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0 50%;
+  }
+}
+
+@keyframes ax-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes ax-indeterminate {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(340%);
+  }
+}
+
+@keyframes ax-rise {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes ax-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes ax-slide-in {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes ax-pop-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.985);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* Respect the user's motion preference — decoration only, never meaning. */
+@media (prefers-reduced-motion: reduce) {
+  .ax-root *,
+  .ax-root *::before,
+  .ax-root *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+@media (max-width: 720px) {
+  :root {
+    /* Narrow viewports have less to spare, but keep the header off the top edge. */
+    --ax-page-top: 24px;
+  }
+  .ax-root {
+    padding: var(--ax-page-top) var(--ax-s3) var(--ax-s7);
+  }
+  .ax-header {
+    align-items: flex-start;
+  }
+  .ax-metric__value {
+    font-size: 28px;
+  }
+}
+
+/* -------------------------------------------------------- diagnostics -- */
+
+/* Collapsed by default and visually quiet: the person who needs this is looking
+   for it, and the person who does not should not have to read past it. */
+.ax-diag {
+  text-align: left;
+  border: 1px solid var(--ax-border-subtle);
+  border-radius: var(--ax-r-md);
+  background: var(--ax-surface-2);
+  padding: var(--ax-s2) var(--ax-s3);
+}
+
+.ax-diag__summary {
+  cursor: pointer;
+  font-size: 11.5px;
+  color: var(--ax-text-4);
+  list-style: none;
+}
+
+.ax-diag__summary::-webkit-details-marker {
+  display: none;
+}
+
+.ax-diag__summary::before {
+  content: "▸";
+  display: inline-block;
+  margin-right: 6px;
+  transition: transform var(--ax-fast) var(--ax-ease-out);
+}
+
+.ax-diag[open] > .ax-diag__summary::before {
+  transform: rotate(90deg);
+}
+
+.ax-diag__summary:focus-visible {
+  outline: 2px solid var(--ax-accent-ring);
+  outline-offset: 2px;
+  border-radius: var(--ax-r-sm);
+}
+
+.ax-diag__pre {
+  font-family: var(--ax-mono);
+  font-size: 11px;
+  line-height: 1.55;
+  color: var(--ax-text-3);
+  /* The whole point is that this can be read and copied, so it wraps and scrolls
+     rather than pushing the gate card wider than the viewport. */
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  max-height: 240px;
+  overflow: auto;
+  margin: var(--ax-s3) 0 var(--ax-s2);
+}
+
+/* ------------------------------------------------------------ picker -- */
+
+/* A project can have hundreds of pipelines. The list scrolls inside its own
+   box so the settings modal keeps its shape and the Save button stays put. */
+.ax-picker {
+  max-height: 260px;
+  overflow-y: auto;
+  border: 1px solid var(--ax-border-subtle);
+  border-radius: var(--ax-r-md);
+  padding: var(--ax-s2);
+  background: var(--ax-surface-2);
+}
+
+/* ======================================================================
+   Shared additions — used by every extension in the family. Keep these
+   generic: product-specific rules belong in the product, not here.
+   ====================================================================== */
+
+/* ------------------------------------------------------------ base ------ */
+
+/* Base element styles are wrapped in :where() so they carry zero specificity
+   and never outrank a component class such as .ax-btn--primary or .ax-tab. */
+:where(.ax-root h1, .ax-root h2, .ax-root h3, .ax-root h4) {
+  font-family: var(--ax-font-num);
+  letter-spacing: -0.01em;
+  line-height: 1.25;
+  color: var(--ax-text);
+}
+
+:where(.ax-root h2) {
+  font-size: 17px;
+  font-weight: 650;
+  margin: 0 0 var(--ax-s3);
+}
+
+:where(.ax-root h3) {
+  font-size: 14.5px;
+  font-weight: 650;
+  margin: 0 0 var(--ax-s2);
+}
+
+:where(.ax-root p) {
+  margin: 0 0 var(--ax-s3);
+}
+
+:where(.ax-root button, .ax-root input, .ax-root select, .ax-root textarea) {
+  font: inherit;
+  color: inherit;
+}
+
+:where(.ax-root a) {
+  color: var(--ax-accent);
+}
+
+:where(.ax-root code),
+.ax-code {
+  font-family: var(--ax-mono);
+  font-size: 12px;
+  padding: 1px 6px;
+  border-radius: var(--ax-r-sm);
+  background: var(--ax-surface-2);
+  border: 1px solid var(--ax-border-subtle);
+}
+
+.ax-root ::selection {
+  background: var(--ax-accent-soft);
+}
+
+/* ------------------------------------------------------------- tabs ----- */
+
+.ax-tabs {
+  display: flex;
+  gap: var(--ax-s1);
+  border-bottom: 1px solid var(--ax-border);
+  margin-bottom: var(--ax-s5);
+  overflow-x: auto;
+}
+
+.ax-tab {
+  font: inherit;
+  font-size: 13.5px;
+  font-weight: 600;
+  padding: 9px 14px;
+  border: none;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+  background: transparent;
+  color: var(--ax-text-3);
+  cursor: pointer;
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--ax-s2);
+  transition:
+    color var(--ax-fast) var(--ax-ease),
+    border-color var(--ax-fast) var(--ax-ease);
+}
+
+.ax-tab:hover {
+  color: var(--ax-text);
+}
+
+.ax-tab[aria-selected="true"] {
+  color: var(--ax-accent);
+  border-bottom-color: var(--ax-accent);
+}
+
+.ax-tab__count {
+  font-size: 11px;
+  font-weight: 650;
+  padding: 1px 7px;
+  border-radius: var(--ax-r-pill);
+  background: var(--ax-neutral-bg);
+  color: var(--ax-text-2);
+}
+
+/* ------------------------------------------------------------ toolbar --- */
+
+.ax-toolbar {
+  display: flex;
+  align-items: center;
+  gap: var(--ax-s2);
+  flex-wrap: wrap;
+  margin-bottom: var(--ax-s4);
+}
+
+.ax-toolbar__group {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--ax-s2);
+}
+
+/* -------------------------------------------------------------- forms --- */
+
+.ax-input,
+.ax-select,
+.ax-textarea {
+  font: inherit;
+  font-size: 13px;
+  padding: 6px 10px;
+  color: var(--ax-text);
+  background: var(--ax-surface);
+  border: 1px solid var(--ax-control-border);
+  border-radius: var(--ax-r-sm);
+  transition:
+    border-color var(--ax-fast) var(--ax-ease),
+    box-shadow var(--ax-fast) var(--ax-ease);
+  min-width: 0;
+}
+
+.ax-textarea {
+  resize: vertical;
+  min-height: 72px;
+  font-family: var(--ax-mono);
+  font-size: 12px;
+}
+
+.ax-input:focus,
+.ax-select:focus,
+.ax-textarea:focus {
+  outline: none;
+  border-color: var(--ax-accent);
+  box-shadow: 0 0 0 3px var(--ax-accent-soft);
+}
+
+.ax-input:disabled,
+.ax-select:disabled,
+.ax-textarea:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.ax-input--invalid,
+.ax-textarea--invalid {
+  border-color: var(--ax-danger);
+}
+
+.ax-input--sm {
+  padding: 4px 8px;
+  font-size: 12px;
+}
+
+.ax-input--num {
+  width: 96px;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.ax-field {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  margin-bottom: var(--ax-s4);
+  min-width: 0;
+}
+
+.ax-field--inline {
+  flex-direction: row;
+  align-items: center;
+  gap: var(--ax-s3);
+}
+
+.ax-label {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--ax-text-2);
+}
+
+.ax-help {
+  font-size: 12px;
+  color: var(--ax-text-3);
+  line-height: 1.5;
+}
+
+.ax-form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: var(--ax-s3) var(--ax-s5);
+}
+
+.ax-check {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--ax-s2);
+  font-size: 13px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.ax-check input[type="checkbox"],
+.ax-check input[type="radio"] {
+  width: 15px;
+  height: 15px;
+  margin: 0;
+  accent-color: var(--ax-accent);
+  cursor: pointer;
+}
+
+.ax-search {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  min-width: 220px;
+}
+
+.ax-search .ax-input {
+  width: 100%;
+  padding-left: 30px;
+}
+
+.ax-search__icon {
+  position: absolute;
+  left: 9px;
+  color: var(--ax-text-4);
+  pointer-events: none;
+  display: inline-flex;
+}
+
+/* -------------------------------------------------------------- layout -- */
+
+.ax-stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ax-s4);
+}
+
+.ax-grid-3 {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: var(--ax-s4);
+}
+
+.ax-kv {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: 6px var(--ax-s4);
+  font-size: 13px;
+}
+
+.ax-kv dt {
+  color: var(--ax-text-3);
+}
+
+.ax-kv dd {
+  margin: 0;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.ax-divider {
+  border: 0;
+  border-top: 1px solid var(--ax-border-subtle);
+  margin: var(--ax-s4) 0;
+}
+
+/* ----------------------------------------------------- metric variants -- */
+
+.ax-metric__label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--ax-text-3);
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+.ax-metric__value {
+  font-family: var(--ax-font-num);
+  font-size: 32px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+  margin: 6px 0 4px;
+  font-variant-numeric: tabular-nums;
+  color: var(--ax-text);
+}
+
+.ax-metric__hint {
+  font-size: 12px;
+  color: var(--ax-text-3);
+}
+
+.ax-metric--success::after {
+  background: var(--ax-success);
+}
+.ax-metric--warn::after {
+  background: var(--ax-warn);
+}
+.ax-metric--danger::after {
+  background: var(--ax-danger);
+}
+.ax-metric--info::after,
+.ax-metric--accent::after {
+  background: var(--ax-accent);
+}
+.ax-metric--neutral::after {
+  background: var(--ax-border-strong);
+}
+
+.ax-metric--success .ax-metric__value {
+  color: var(--ax-success);
+}
+.ax-metric--warn .ax-metric__value {
+  color: var(--ax-warn);
+}
+.ax-metric--danger .ax-metric__value {
+  color: var(--ax-danger);
+}
+.ax-metric--info .ax-metric__value,
+.ax-metric--accent .ax-metric__value {
+  color: var(--ax-accent);
+}
+
+/* -------------------------------------------------------- severity pills - */
+
+.ax-pill--critical {
+  background: var(--ax-danger-bg);
+  color: var(--ax-danger);
+}
+.ax-pill--neutral {
+  background: var(--ax-neutral-bg);
+  color: var(--ax-text-2);
+}
+.ax-pill--accent {
+  background: var(--ax-accent-soft);
+  color: var(--ax-accent);
+}
+
+.ax-banner--success {
+  background: var(--ax-success-bg);
+  border-color: var(--ax-success);
+  color: var(--ax-success);
+}
+
+/* ------------------------------------------------------------- bars ----- */
+
+.ax-bar {
+  height: 8px;
+  border-radius: var(--ax-r-pill);
+  background: var(--ax-surface-3);
+  overflow: hidden;
+}
+
+.ax-bar__fill {
+  height: 100%;
+  border-radius: inherit;
+  background: var(--ax-accent);
+  transition: width var(--ax-base) var(--ax-ease-out);
+}
+
+.ax-bar__fill--success {
+  background: var(--ax-success);
+}
+.ax-bar__fill--warn {
+  background: var(--ax-warn);
+}
+.ax-bar__fill--danger {
+  background: var(--ax-danger);
+}
+
+/* ------------------------------------------------------- collapsible ---- */
+
+.ax-disclosure {
+  border: 1px solid var(--ax-border);
+  border-radius: var(--ax-r-lg);
+  background: var(--ax-surface);
+  box-shadow: var(--ax-shadow-1);
+  margin-bottom: var(--ax-s3);
+  overflow: hidden;
+}
+
+.ax-disclosure__head {
+  display: flex;
+  align-items: center;
+  gap: var(--ax-s3);
+  width: 100%;
+  padding: var(--ax-s3) var(--ax-s4);
+  border: none;
+  background: transparent;
+  text-align: left;
+  cursor: pointer;
+  font: inherit;
+  color: var(--ax-text);
+}
+
+.ax-disclosure__head:hover {
+  background: var(--ax-surface-2);
+}
+
+.ax-disclosure__chevron {
+  display: inline-flex;
+  color: var(--ax-text-4);
+  transition: transform var(--ax-fast) var(--ax-ease-out);
+}
+
+.ax-disclosure--open .ax-disclosure__chevron {
+  transform: rotate(90deg);
+}
+
+.ax-disclosure__body {
+  padding: 0 var(--ax-s4) var(--ax-s4);
+  border-top: 1px solid var(--ax-border-subtle);
+  padding-top: var(--ax-s3);
+}
+
+/* ---------------------------------------------------------- pagination -- */
+
+.ax-pager {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--ax-s2);
+  font-size: 12.5px;
+  color: var(--ax-text-3);
+  padding: var(--ax-s3) 0;
+}
+
+/* --------------------------------------------------------- theme toggle - */
+
+.ax-theme-toggle button {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+/* ------------------------------------------------------------ footer ---- */
+
+.ax-footer {
+  margin-top: var(--ax-s8);
+  padding-top: var(--ax-s4);
+  border-top: 1px solid var(--ax-border-subtle);
+  font-size: 11.5px;
+  color: var(--ax-text-4);
+  display: flex;
+  justify-content: space-between;
+  gap: var(--ax-s3);
+  flex-wrap: wrap;
+}
+
+/* ======================================================================
+   High contrast
+   Active when the Azure DevOps host runs one of its High Contrast themes
+   (detected from the theme variables the SDK stamps on :root) or when the
+   OS forces colours. Tokens map straight onto the host's own variables so
+   the extension shows the user's chosen palette; decoration (gradients,
+   shadows, translucent fills) is removed and every boundary becomes a
+   solid line so nothing depends on colour alone.
+   ====================================================================== */
+
+:root[data-contrast="high"] {
+  --ax-bg: var(--background-color, #000000);
+  --ax-surface: var(--background-color, #000000);
+  --ax-surface-2: var(--background-color, #000000);
+  --ax-surface-3: var(--background-color, #000000);
+  --ax-surface-glass: none;
+  --ax-overlay: rgba(0, 0, 0, 0.85);
+
+  --ax-text: var(--text-primary-color, #ffffff);
+  --ax-text-2: var(--text-primary-color, #ffffff);
+  --ax-text-3: var(--text-secondary-color, #ffffff);
+  --ax-text-4: var(--text-secondary-color, #ffffff);
+
+  --ax-border: var(--text-primary-color, #ffffff);
+  --ax-border-strong: var(--text-primary-color, #ffffff);
+  --ax-border-subtle: var(--text-primary-color, #ffffff);
+  --ax-control-border: var(--text-primary-color, #ffffff);
+
+  --ax-accent: var(--communication-foreground, #ffff00);
+  --ax-accent-strong: var(--communication-foreground, #ffff00);
+  --ax-accent-soft: transparent;
+  --ax-accent-ring: var(--communication-foreground, #ffff00);
+  --ax-accent-contrast: var(--background-color, #000000);
+  --ax-primary: var(--communication-foreground, #ffff00);
+  --ax-primary-strong: var(--communication-foreground, #ffff00);
+  --ax-primary-fg: var(--background-color, #000000);
+
+  --ax-success: var(--status-success-foreground, var(--text-primary-color, #ffffff));
+  --ax-success-bg: transparent;
+  --ax-danger: var(--status-error-foreground, var(--text-primary-color, #ffffff));
+  --ax-danger-bg: transparent;
+  --ax-warn: var(--status-warning-text, var(--text-primary-color, #ffffff));
+  --ax-warn-bg: transparent;
+  --ax-info: var(--status-info-foreground, var(--text-primary-color, #ffffff));
+  --ax-info-bg: transparent;
+  --ax-neutral-bg: transparent;
+
+  --ax-band-elite: var(--status-success-foreground, var(--text-primary-color, #ffffff));
+  --ax-band-elite-bg: transparent;
+  --ax-band-high: var(--communication-foreground, #ffff00);
+  --ax-band-high-bg: transparent;
+  --ax-band-medium: var(--status-warning-text, var(--text-primary-color, #ffffff));
+  --ax-band-medium-bg: transparent;
+  --ax-band-low: var(--status-error-foreground, var(--text-primary-color, #ffffff));
+  --ax-band-low-bg: transparent;
+
+  --ax-prod-verified: var(--status-success-foreground, var(--text-primary-color, #ffffff));
+  --ax-prod-unverified: var(--status-warning-text, var(--text-primary-color, #ffffff));
+  --ax-prod-failed: var(--status-error-foreground, var(--text-primary-color, #ffffff));
+
+  --ax-lane-grid: var(--text-secondary-color, #ffffff);
+
+  --ax-chart-1: var(--communication-foreground, #ffff00);
+  --ax-chart-2: var(--status-success-foreground, var(--text-primary-color, #ffffff));
+  --ax-chart-3: var(--status-warning-text, var(--text-primary-color, #ffffff));
+  --ax-chart-4: var(--status-error-foreground, var(--text-primary-color, #ffffff));
+  --ax-chart-5: var(--text-primary-color, #ffffff);
+  --ax-chart-6: var(--text-secondary-color, #ffffff);
+
+  --ax-shadow-1: none;
+  --ax-shadow-2: none;
+  --ax-shadow-3: none;
+  --ax-skeleton-a: transparent;
+  --ax-skeleton-b: var(--text-secondary-color, #ffffff);
+}
+
+:root[data-contrast="high"] .ax-brand-mark,
+:root[data-contrast="high"] .ax-btn--primary,
+:root[data-contrast="high"] .ax-btn--primary:hover:not(:disabled),
+:root[data-contrast="high"] .ax-progress__fill,
+:root[data-contrast="high"] .ax-bar__fill {
+  background: var(--ax-primary);
+  background-image: none;
+  box-shadow: none;
+}
+
+:root[data-contrast="high"] .ax-btn--primary {
+  border: 1px solid var(--ax-primary);
+  color: var(--ax-primary-fg);
+}
+
+:root[data-contrast="high"] .ax-brand-mark {
+  color: var(--ax-primary-fg) !important;
+}
+
+:root[data-contrast="high"] .ax-btn--ghost {
+  border-color: var(--ax-control-border);
+}
+
+:root[data-contrast="high"] .ax-pill,
+:root[data-contrast="high"] .ax-chip,
+:root[data-contrast="high"] .ax-tab__count,
+:root[data-contrast="high"] .ax-avatar {
+  border: 1px solid currentColor;
+}
+
+:root[data-contrast="high"] .ax-link,
+:root[data-contrast="high"] .ax-root a {
+  text-decoration: underline;
+}
+
+:root[data-contrast="high"] .ax-tab[aria-selected="true"] {
+  border-bottom-width: 3px;
+}
+
+:root[data-contrast="high"] .ax-segmented button[aria-pressed="true"] {
+  outline: 2px solid var(--ax-accent);
+  outline-offset: -2px;
+}
+
+:root[data-contrast="high"] .ax-table tbody tr:hover,
+:root[data-contrast="high"] .ax-btn:hover:not(:disabled) {
+  outline: 2px solid var(--ax-accent);
+  outline-offset: -2px;
+}
+
+:root[data-contrast="high"] .ax-root :focus-visible {
+  outline-width: 3px;
+}
+
+:root[data-contrast="high"] .ax-metric::after {
+  height: 3px;
+}
+
+:root[data-contrast="high"] .ax-btn:disabled,
+:root[data-contrast="high"] .ax-input:disabled,
+:root[data-contrast="high"] .ax-select:disabled {
+  opacity: 1;
+  border-style: dashed;
+  color: var(--text-disabled-color, var(--ax-text-3));
+}
+
+/* Windows / OS forced colours: let the system palette through and make sure
+   every control still has a visible boundary. */
+@media (forced-colors: active) {
+  .ax-root * {
+    forced-color-adjust: auto;
+  }
+  .ax-btn,
+  .ax-input,
+  .ax-select,
+  .ax-textarea,
+  .ax-pill,
+  .ax-chip,
+  .ax-card,
+  .ax-metric,
+  .ax-segmented button[aria-pressed="true"],
+  .ax-tab[aria-selected="true"] {
+    border: 1px solid ButtonText;
+  }
+  .ax-btn--primary {
+    background: ButtonFace;
+    color: ButtonText;
+  }
+  .ax-brand-mark {
+    background: Canvas;
+    color: CanvasText !important;
+    border: 1px solid CanvasText;
+  }
+  .ax-progress__fill,
+  .ax-bar__fill,
+  .ax-metric::after {
+    background: Highlight;
+  }
+  .ax-link,
+  .ax-root a {
+    color: LinkText;
+    text-decoration: underline;
+  }
+}

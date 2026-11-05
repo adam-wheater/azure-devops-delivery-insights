@@ -1,0 +1,74 @@
+[
+  {
+    "name": "overview",
+    "steps": [
+      {
+        "click": "role=button[name=/^Analyse$/]"
+      },
+      {
+        "waitFor": "[data-testid=diagnostics-strip]"
+      },
+      {
+        "wait": 1200
+      }
+    ]
+  },
+  {
+    "name": "failures",
+    "steps": [
+      {
+        "click": "role=button[name=/^Analyse$/]"
+      },
+      {
+        "waitFor": "[data-testid=diagnostics-strip]"
+      },
+      {
+        "wait": 1200
+      }
+    ],
+    "selector": "[data-testid=failed-deployments]"
+  },
+  {
+    "name": "environments",
+    "steps": [
+      {
+        "click": "role=button[name=/^Analyse$/]"
+      },
+      {
+        "waitFor": "[data-testid=diagnostics-strip]"
+      },
+      {
+        "wait": 1200
+      }
+    ],
+    "selector": "[data-testid=environment-matrix]"
+  },
+  {
+    "name": "lead-time",
+    "steps": [
+      {
+        "click": "role=button[name=/^Analyse$/]"
+      },
+      {
+        "waitFor": "[data-testid=diagnostics-strip]"
+      },
+      {
+        "wait": 1200
+      }
+    ],
+    "selector": "[data-testid=lead-time-breakdown]"
+  },
+  {
+    "name": "access",
+    "height": 1000,
+    "steps": [
+      {
+        "click": "role=button[name=/Access/]"
+      },
+      {
+        "wait": 500
+      }
+    ],
+    "selector": ".ax-modal"
+  }
+]

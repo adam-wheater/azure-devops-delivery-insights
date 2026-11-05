@@ -1,0 +1,28 @@
+# Source files (not needed in package - only dist/ and static/ are used)
+src/**
+tests/**
+scripts/**
+coverage/**
+node_modules/**
+
+# Config files
+tsconfig.json
+webpack.config.js
+package.json
+package-lock.json
+jest.config.js
+eslint.config.js
+.prettierrc.json
+.gitignore
+.vsixignore
+
+# Dev files
+*.log
+.DS_Store
+out/**
+.github/**
+build.ps1
+README.md
+
+# The Marketplace rejects SVG files inside a .vsix
+*.svg

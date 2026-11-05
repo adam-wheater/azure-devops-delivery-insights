@@ -1,0 +1,104 @@
+PROPRIETARY SOURCE-AVAILABLE LICENSE
+
+Copyright (c) 2026 Adam Wheater. All rights reserved.
+
+This software, including its source code, compiled output, documentation,
+icons and other assets (together, the "Software"), is made available for
+viewing only. It is NOT open source. Nothing in this license grants you any
+right to copy, modify or distribute the Software except as expressly stated
+below.
+
+1. DEFINITIONS
+
+   "Licensor" means Adam Wheater, the copyright holder.
+   "You" means any person or organisation that accesses the Software.
+   "Extension" means the packaged Azure DevOps extension built from the
+   Software and published by the Licensor to the Visual Studio Marketplace.
+
+2. WHAT YOU MAY DO
+
+   a. View and read the source code, and build and run it on your own
+      machines, for the purpose of evaluating the Software, auditing its
+      security and privacy behaviour, and reporting bugs to the Licensor.
+   b. Install and use the Extension, as published by the Licensor, within
+      your own Azure DevOps organisations, subject to the Visual Studio
+      Marketplace terms of use.
+   c. Keep a copy of the source code in a GitHub fork solely to the extent
+      GitHub's Terms of Service require that to be permitted, and solely for
+      the purposes in 2(a). No other right attaches to such a fork.
+
+3. WHAT YOU MAY NOT DO
+
+   Without prior written permission from the Licensor, and except as
+   section 2 allows, you may not:
+
+   a. Copy, reproduce or redistribute the Software or any part of it, in
+      source or compiled form, by any means.
+   b. Modify, translate, adapt or create derivative works of the Software,
+      or incorporate any part of it into other software.
+   c. Package, publish, sell, rent, lease, sublicense or otherwise make the
+      Software, the Extension or anything built from the Software available
+      to third parties, including by publishing it to any marketplace or
+      registry.
+   d. Use the Software or the Extension to provide a service to third
+      parties, or in any commercial product other than your own internal
+      use of the published Extension under 2(b).
+   e. Use the Software, in whole or in part, as training data for a machine
+      learning or artificial intelligence model.
+   f. Remove, obscure or alter any copyright, trademark or license notice.
+   g. Reverse engineer, decompile or disassemble the compiled Extension,
+      except to the extent that applicable law expressly permits this
+      despite this restriction.
+
+4. CONTRIBUTIONS
+
+   Bug reports and feature requests submitted through the repository's
+   issue tracker are welcome. If you submit code, documentation or other
+   material to the Licensor (a "Contribution"), you grant the Licensor a
+   perpetual, worldwide, irrevocable, royalty-free license to use,
+   reproduce, modify, distribute and sublicense that Contribution as part
+   of the Software, and you confirm that you have the right to grant it.
+   The Licensor is under no obligation to accept any Contribution.
+
+5. OWNERSHIP
+
+   The Software is licensed, not sold. The Licensor retains all right,
+   title and interest in the Software, including all intellectual property
+   rights. All rights not expressly granted in this license are reserved.
+
+6. TERMINATION
+
+   This license terminates automatically if you breach any of its terms.
+   On termination you must stop using the Software and destroy every copy
+   in your possession, other than a fork retained strictly under 2(c).
+
+7. NO WARRANTY
+
+   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+   OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+   MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NON-INFRINGEMENT.
+
+8. LIMITATION OF LIABILITY
+
+   TO THE MAXIMUM EXTENT PERMITTED BY LAW, IN NO EVENT SHALL THE LICENSOR BE
+   LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+   OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+   WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+9. GOVERNING LAW
+
+   This license is governed by the laws of England and Wales, and the
+   courts of England and Wales have exclusive jurisdiction over any
+   dispute arising from it.
+
+10. PERMISSIONS
+
+   To request permission for any use not covered by section 2, contact the
+   Licensor through https://github.com/adam-wheater.
+
+11. THIRD-PARTY COMPONENTS
+
+   The Extension bundles open source components that the Licensor does not
+   own. They remain under their own licenses, reproduced in
+   THIRD-PARTY-NOTICES.txt inside the Extension, and nothing in this
+   license restricts the rights those licenses give you.

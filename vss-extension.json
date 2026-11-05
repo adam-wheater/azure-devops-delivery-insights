@@ -1,0 +1,108 @@
+{
+    "manifestVersion": 1,
+    "id": "delivery-insights",
+    "version": "1.0.0",
+    "name": "Delivery Insights",
+    "description": "DORA metrics, environment tracking, and delivery insights for Azure DevOps pipelines.",
+    "publisher": "adam-wheater",
+    "categories": ["Azure Pipelines"],
+    "tags": [
+        "dora",
+        "metrics",
+        "deployment",
+        "environments",
+        "lead-time",
+        "change-failure-rate",
+        "pipelines",
+        "devops"
+    ],
+    "targets": [
+        {
+            "id": "Microsoft.VisualStudio.Services"
+        }
+    ],
+    "icons": {
+        "default": "static/icon.png"
+    },
+    "screenshots": [
+        { "path": "static/screenshots/overview.png" },
+        { "path": "static/screenshots/failures.png" },
+        { "path": "static/screenshots/environments.png" },
+        { "path": "static/screenshots/lead-time.png" },
+        { "path": "static/screenshots/access.png" }
+    ],
+    "content": {
+        "details": {
+            "path": "overview.md"
+        },
+        "license": {
+            "path": "LICENSE"
+        }
+    },
+    "links": {
+        "repository": {
+            "uri": "https://github.com/adam-wheater/azure-devops-delivery-insights"
+        },
+        "issues": {
+            "uri": "https://github.com/adam-wheater/azure-devops-delivery-insights/issues"
+        },
+        "support": {
+            "uri": "https://github.com/adam-wheater/azure-devops-delivery-insights/issues"
+        }
+    },
+    "repository": {
+        "type": "git",
+        "uri": "https://github.com/adam-wheater/azure-devops-delivery-insights"
+    },
+    "branding": {
+        "color": "#0078d4",
+        "theme": "dark"
+    },
+    "galleryFlags": [
+        "Preview"
+    ],
+    "contributions": [
+        {
+            "id": "delivery-insights-hub",
+            "type": "ms.vss-web.hub",
+            "description": "Delivery Insights hub under Pipelines",
+            "targets": [
+                "ms.vss-build-web.build-release-hub-group"
+            ],
+            "properties": {
+                "name": "Delivery Insights",
+                "order": 99,
+                "uri": "dist/DeliveryInsightsHub/DeliveryInsightsHub.html",
+                "icon": {
+                    "light": "static/icon.png",
+                    "dark": "static/icon.png"
+                }
+            }
+        }
+    ],
+    "scopes": [
+        "vso.build",
+        "vso.code",
+        "vso.extension.data",
+        "vso.project"
+    ],
+    "demands": [],
+    "files": [
+        {
+            "path": "dist",
+            "addressable": true
+        },
+        {
+            "path": "static",
+            "addressable": true
+        },
+        {
+            "path": "overview.md",
+            "addressable": true
+        },
+        {
+            "path": "LICENSE",
+            "addressable": true
+        }
+    ]
+}
